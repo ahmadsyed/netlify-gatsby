@@ -89,7 +89,7 @@ export const IndexPageTemplate = ({
                     {console.log('kont',kontentItemHomepagecontent)}
                     {console.log('data',data)}
                     <p className="subtitle">{'test'}</p>
-                    <p className="subtitle">{kontentItemHomepagecontent.elements.bottom_product_text.value}</p>
+                    {/* <p className="subtitle">{kontentItemHomepagecontent}</p> */}
                     <p className="subtitle">{'test'}</p>
                   </div>
                 </section>
