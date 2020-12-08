@@ -14,8 +14,10 @@ export const IndexPageTemplate = ({
   mainpitch,
   bigimage,
   description,
+  kontentItemHomepagecontent,
   intro,
-  post
+  post,
+  data
 }) => (
   <div>
     <div
@@ -84,6 +86,10 @@ export const IndexPageTemplate = ({
                     <PhotoGrid gridItems={intro.blurbs} />
                     
                     <h4 className="title is-spaced is-4">{intro.heading}</h4>
+                    {console.log('kont',kontentItemHomepagecontent)}
+                    {console.log('data',data)}
+                    <p className="subtitle">{'test'}</p>
+                    <p className="subtitle">{kontentItemHomepagecontent.elements.bottom_product_text.value}</p>
                     <p className="subtitle">{'test'}</p>
                   </div>
                 </section>
@@ -229,6 +235,18 @@ export const pageQuery = graphql`
               }
             }
           }
+        }
+      }
+    }
+    kontentItemHomepagecontent(elements: {top_hero_text: {value: {}}}) {
+      elements {
+        bottom_product_image {
+          value {
+            url
+          }
+        }
+        bottom_product_text {
+          value
         }
       }
     }
