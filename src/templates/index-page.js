@@ -84,7 +84,7 @@ export const IndexPageTemplate = ({
                     <PhotoGrid gridItems={intro.blurbs} />
                     
                     <h4 className="title is-spaced is-4">{intro.heading}</h4>
-                    <p className="subtitle">{intro.description}</p>
+                    <p className="subtitle">{'test'}</p>
                   </div>
                 </section>
                 
