@@ -12,10 +12,10 @@ module.exports = {
       resolve: 'gatsby-source-bigcommerce',
       options: {
         // REQUIRED
-        clientId: process.env.API_CLIENT_ID,
-        secret: process.env.API_SECRET,
-        accessToken: process.env.API_TOKEN,
-        storeHash: process.env.API_STORE_HASH,
+        clientId: '5byrlexbslf78kwbcqd3vnh6bdqju0p',
+        secret: '024da43d96ed7b7d8333e23088df1a8d7309317d218cbf506330c84459fe6f79',
+        accessToken: 'odtaq0i64jqu55n1taochpomv8agj4',
+        storeHash: 'rnyzlno5yl',
         endpoints: {
           BigCommerceProducts: '/catalog/products?include=images,variants,custom_fields,options,modifiers,videos',
           BigCommerceCategories: '/catalog/categories',
