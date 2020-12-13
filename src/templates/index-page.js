@@ -14,8 +14,8 @@ export const IndexPageTemplate = ({
   mainpitch,
   bigimage,
   description,
-  kontentItemHomepagecontent,
   intro,
+  cmsCont,
   post,
   data
 }) => (
@@ -86,11 +86,12 @@ export const IndexPageTemplate = ({
                     <PhotoGrid gridItems={intro.blurbs} />
                     
                     <h4 className="title is-spaced is-4">{intro.heading}</h4>
-                    {console.log('kont',kontentItemHomepagecontent)}
-                    {console.log('data',data)}
-                    <p className="subtitle">{'test'}</p>
-                    {/* <p className="subtitle">{kontentItemHomepagecontent}</p> */}
-                    <p className="subtitle">{'test'}</p>
+                    <h4 className="title is-spaced is-4">{cmsCont.name.text}</h4>
+                    {console.log('data',cmsCont)}
+                    <p className="subtitle">{cmsCont.description.text}</p>
+                    <div className="block">
+                      <img src={cmsCont.image.url} alt={bigimage.alt} />
+                    </div>
                   </div>
                 </section>
                 
@@ -134,7 +135,8 @@ IndexPageTemplate.propTypes = {
 
 const IndexPage = ({ data }) => {
   const { frontmatter } = data.markdownRemark;
-
+  console.log('prismic below');
+  console.log(data.allPrismicProduct);
   return (
     <Layout>
       <IndexPageTemplate
@@ -147,6 +149,7 @@ const IndexPage = ({ data }) => {
         description={frontmatter.description}
         intro={frontmatter.intro}
         post={data.allMarkdownRemark.edges[0].node}
+        cmsCont={data.allPrismicProduct.nodes[0].data}
       />
     </Layout>
   );
@@ -238,17 +241,20 @@ export const pageQuery = graphql`
         }
       }
     }
-    kontentItemHomepagecontent(elements: {top_hero_text: {value: {}}}) {
-      elements {
-        bottom_product_image {
-          value {
+    allPrismicProduct {
+      nodes {
+        data {
+          name {
+            text
+          }
+          image {
             url
           }
-        }
-        bottom_product_text {
-          value
+          description {
+            text
+          }
         }
       }
     }
-  }
+  }    
 `;
