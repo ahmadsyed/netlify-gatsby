@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const cookie = require('cookie');
 const setCookie = require('set-cookie-parser');
+import _ from 'lodash';
 
 // only log in development mode
 const devModeLog = str => process.env !== 'production' && console.log(str);
@@ -27,7 +28,8 @@ export function handler(event, context, callback) {
     'X-Client-Type': 'Gatsby',
     'X-Client-Name': 'gatsby-bigcommerce-netlify-cms-starter',
     'X-Plugin-Version': '1.0.0',
-    Accept: 'application/json'
+    Accept: 'application/json',
+    'content-type': 'application/json',
   };
   const CORS_HEADERS = {
     'Access-Control-Allow-Headers': 'Content-Type, Accept',
@@ -48,7 +50,15 @@ export function handler(event, context, callback) {
 
   // Assemble BC API URL
   const constructURL = () => {
-    let ROOT_URL = `https://api.bigcommerce.com/stores/${API_STORE_HASH}/v3/`;
+    let ROOT_URL ='';
+    let values = ['validate'];
+    console.log("ENDPOINT_QUERY_STRING---",ENDPOINT_QUERY_STRING);
+    if(_.some(values, (el) => _.includes(ENDPOINT_QUERY_STRING, el))){
+      ROOT_URL = `https://api.bigcommerce.com/stores/${API_STORE_HASH}/v2/`;
+    }else{
+      ROOT_URL = `https://api.bigcommerce.com/stores/${API_STORE_HASH}/v3/`;
+    }
+    console.log("ROOT_URL---",ROOT_URL);
     if (ENDPOINT_QUERY_STRING === 'carts/items') {
       if (hasCartIdCookie) {
         if (typeof event.queryStringParameters.itemId != 'undefined') {
@@ -79,7 +89,7 @@ export function handler(event, context, callback) {
       '(in setCookieHeader function) ENDPOINT_QUERY_STRING: ',
       ENDPOINT_QUERY_STRING
     );
-    // devModeLog('(in setCookieHeader function) response: ', response)
+    devModeLog('(in setCookieHeader function) response: ', response)
 
     const statusCode = response.status;
     const body = response.data;
@@ -124,7 +134,11 @@ export function handler(event, context, callback) {
 
         pass(response, cookieHeader);
       })
-      .catch(err => pass(err.response));
+      .catch(err => {
+        console.log('err response---',err.response)
+        pass(err.response)
+      }
+        );
   };
   if (event.httpMethod === 'POST') {
     devModeLog('--------');

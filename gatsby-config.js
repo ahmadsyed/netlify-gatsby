@@ -14,10 +14,10 @@ module.exports = {
       resolve: 'gatsby-source-bigcommerce',
       options: {
         // REQUIRED
-        clientId: '5byrlexbslf78kwbcqd3vnh6bdqju0p',
-        secret: '024da43d96ed7b7d8333e23088df1a8d7309317d218cbf506330c84459fe6f79',
-        accessToken: 'odtaq0i64jqu55n1taochpomv8agj4',
-        storeHash: 'rnyzlno5yl',
+        clientId: 'kgchaho1g4mc7rzsz18yay1dchntbo9',
+        secret: 'a190b4e6504a7d45a0d694eb187fa3229a0306b9a9697f2d979f2680a0baf6f9',
+        accessToken: '6jc1ax7fyqwnqzmrcmlpedm16hrj5qj',
+        storeHash: 'p7yh4d2thd',
         endpoints: {
           BigCommerceProducts: '/catalog/products?include=images,variants,custom_fields,options,modifiers,videos',
           BigCommerceCategories: '/catalog/categories',
