@@ -85,9 +85,9 @@ const Login = () => {
 			if (userData) {
 				let customer_id = userData.data[0].id;
 				console.log('customer_id---', customer_id);
-				const passwordData = [{
+				const passwordData = {
 						password: password
-					}];
+					};
 				fetch(
 					`/.netlify/functions/bigcommerce?endpoint=customers/${customer_id}/validate`,
 					{
@@ -98,8 +98,10 @@ const Login = () => {
 					}
 				)
 					.then((response) => {
-						console.log('first---', response);
-						response.json();
+						console.log('first---');
+						console.log(response);
+						JSON.stringify(response);
+						//store user details in storage for display
 					})
 					.then((IsCustomer) => {
 						console.log('second---', IsCustomer);

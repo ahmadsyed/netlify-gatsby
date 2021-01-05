@@ -102,8 +102,17 @@ export function handler(event, context, callback) {
       };
       devModeLog('- Expiring cardId cookieHeader: -');
       devModeLog(cookieHeader);
-    } else if (responseType === 'response') {
-      if (!hasCartIdCookie && body.data.id) {
+    }else if(body.success){
+      cookieHeader = {
+        'Set-Cookie': cookie.serialize('user', 1000, {
+          maxAge: 60 * 60 * 24 * 28 // 4 weeks
+        })
+      };
+      devModeLog('- Assigning cookieHeader: -');
+      devModeLog(cookieHeader);
+    }
+     else if (responseType === 'response') {
+      if (!hasCartIdCookie && body.data.id ) {
         cookieHeader = {
           'Set-Cookie': cookie.serialize('cartId', body.data.id, {
             maxAge: 60 * 60 * 24 * 28 // 4 weeks
@@ -120,8 +129,8 @@ export function handler(event, context, callback) {
   // Here's a function we'll use to define how our response will look like when we callback
   const pass = (response, cookieHeader) =>
     callback(null, {
-      statusCode: response.status,
-      body: JSON.stringify(response.data),
+      statusCode: response?response.status:200,
+      body: response?JSON.stringify(response.data):response.data,
       headers: { ...CORS_HEADERS, ...cookieHeader }
     });
 
@@ -130,12 +139,12 @@ export function handler(event, context, callback) {
     axios
       .post(constructURL(), body, { headers: REQUEST_HEADERS })
       .then(response => {
+        console.log('resp',response);
         const cookieHeader = setCookieHeader('response', response);
-
         pass(response, cookieHeader);
       })
       .catch(err => {
-        console.log('err response---',err.response)
+        console.log('err response---',err)
         pass(err.response)
       }
         );
