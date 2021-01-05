@@ -29,7 +29,7 @@ export function handler(event, context, callback) {
     'X-Client-Name': 'gatsby-bigcommerce-netlify-cms-starter',
     'X-Plugin-Version': '1.0.0',
     Accept: 'application/json',
-    'content-type': 'application/json',
+    'Content-Type': 'application/json',
   };
   const CORS_HEADERS = {
     'Access-Control-Allow-Headers': 'Content-Type, Accept',
