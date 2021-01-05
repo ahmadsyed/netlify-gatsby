@@ -72,6 +72,9 @@ const Navbar = class extends React.Component {
               <Link className="navbar-item" to="/contact">
                 Contact
               </Link>
+              <Link className="navbar-item" to="/research-page">
+                Research
+              </Link>              
               <CartContext.Consumer>
                 {value => {
                   return (

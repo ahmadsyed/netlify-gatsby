@@ -4,6 +4,9 @@
   "version": "0.5.0",
   "author": "BigCommerce",
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.32",
+    "@fortawesome/free-solid-svg-icons": "^5.15.1",
+    "@fortawesome/react-fontawesome": "^0.1.14",
     "aws-sdk": "^2.806.0",
     "axios": "^0.19.2",
     "bulma": "^0.7.0",
@@ -37,6 +40,7 @@
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-helmet": "^5.2.0",
+    "react-tabs": "^3.1.2",
     "set-cookie-parser": "^2.4.6",
     "uuid": "^3.4.0"
   },
