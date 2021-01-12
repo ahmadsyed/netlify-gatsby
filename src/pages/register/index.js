@@ -6,6 +6,7 @@ import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './register.css';
 import Layout from '../../components/Layout';
 import _ from 'lodash';
+import PageLoader from '../../utility/PageLoader';
 
 const Register = () => {
 	const [first_name, setFirstName] = useState('');
@@ -14,9 +15,10 @@ const Register = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorLog, setErrorLog] = useState([]);
-
+	const [loaderDiv, setLoaderDiv] = useState(false);
 
 	const handleSubmit = () => {
+		setLoaderDiv(true);
 		const SignupData = [
 			{
 				email: email,
@@ -42,9 +44,11 @@ const Register = () => {
 			.then(function(user) {
 				console.log('data---', user);
 				if (user.errors) {
+					setLoaderDiv(false);
 					setErrorLog(user.errors);
 					window.scrollTo(0, 0);
 				} else {
+					setLoaderDiv(false);
 					console.log('firstName---', user.data[0].first_name);
 					navigate('/login');
 				}
@@ -67,6 +71,11 @@ const Register = () => {
 			<form style={{ border: '1px solid #ccc' }}>
 				<div className='container'>
 					<h3 style={{ textAlign: 'center' }}>Sign Up</h3>
+					{loaderDiv ? (
+						<div style={{ textAlign: 'center' }}>
+							<PageLoader />
+						</div>
+					) : null}
 					<div className='container'>
 						<span style={{ color: 'red' }}>
 							<ol>

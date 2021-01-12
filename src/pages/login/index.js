@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { navigate } from 'gatsby';
-import { handleLogin, isLoggedIn } from './../../services/auth';
+import { isLoggedIn } from './../../services/auth';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../register/register.css';
 import Layout from '../../components/Layout';
 import { Button } from 'react-bootstrap';
+import PageLoader from '../../utility/PageLoader';
 
 // const jwt = require('jsonwebtoken');
 // const { v4: uuidv4 } = require('uuid');
@@ -13,6 +14,8 @@ const Login = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [errorMessage, setError] = useState('');
+	const [loaderDiv, setLoaderDiv] = useState(false);
+	const [isChecked, setIsChecked] = useState(false);
 
 	// const getLoginUrl=(customerId, storeHash, storeUrl, clientId, clientSecret)=> {
 	// 	console.log('clientSecret---',clientSecret)
@@ -46,26 +49,49 @@ const Login = () => {
 	// 			const storeUrl ='https://test-product.mybigcommerce.com';
 	// 			const loginUrl = getLoginUrl(customerId, storeHash, storeUrl, clientId, clientSecret);
 	// 			navigate(loginUrl);
-				
+
 	// 		} else {
 	// 			setError('Email is not registered.');
 	// 		}
 	// 	});
 	// };
+
+	useEffect(async () => {
+		if (localStorage.checkbox == 'true' && localStorage.email !== '') {
+			setEmail(localStorage.email);
+			setPassword(localStorage.password);
+			setIsChecked(true);
+		} else {
+			setIsChecked(false);
+		}
+	}, []);
+
+	const onChangeCheckbox = (event) => {
+		setIsChecked(event.target.checked);
+	};
+
 	const handleSubmit = () => {
-		console.log('handleSubmit---', email, '---passs----', password);
+		setLoaderDiv(true);
 		checkUser(email).then((userData) => {
-			console.log('userData---', userData);
 			if (userData) {
 				let customer_id = userData.data[0].id;
 				let company = userData.data[0].company;
 				let first_name = userData.data[0].first_name;
 				let last_name = userData.data[0].last_name;
 				let phone = userData.data[0].phone;
-				console.log('customer_id---', customer_id);
 				const passwordData = {
-						password: password
-					};
+					password: password,
+				};
+
+				if (isChecked && email !== '') {
+					localStorage.email = email;
+					localStorage.password = password;
+					localStorage.checkbox = isChecked;
+				} else {
+					localStorage.setItem('checkbox', isChecked);
+					localStorage.removeItem('password');
+				}
+
 				fetch(
 					`/.netlify/functions/bigcommerce?endpoint=customers/${customer_id}/validate`,
 					{
@@ -76,26 +102,25 @@ const Login = () => {
 					}
 				)
 					.then((response) => {
-						console.log('first---');
 						console.log(response);
 						return response.json();
 						//store user details in storage for display
 					})
 					.then((IsCustomer) => {
-						console.log('second---', IsCustomer.success);
 						if (IsCustomer.success) {
 							//logged in and move to profile page
+							setLoaderDiv(false);
 							setError('');
-							localStorage.setItem('customerId',customer_id);
-							localStorage.setItem('email',email);
-							localStorage.setItem('company',company);
-							localStorage.setItem('first_name',first_name);
-							localStorage.setItem('last_name',last_name);
-							localStorage.setItem('phone',phone);
+							localStorage.setItem('customerId', customer_id);
+							localStorage.setItem('email', email);
+							localStorage.setItem('company', company);
+							localStorage.setItem('first_name', first_name);
+							localStorage.setItem('last_name', last_name);
+							localStorage.setItem('phone', phone);
 							localStorage.setItem('isLoggedIn', true);
 							navigate('/profile');
-							
 						} else {
+							setLoaderDiv(false);
 							setError('Incorrect credentials. Try with correct credentials');
 						}
 					})
@@ -103,6 +128,7 @@ const Login = () => {
 						console.error(error);
 					});
 			} else {
+				setLoaderDiv(false);
 				setError('Email is not registered.');
 			}
 		});
@@ -120,10 +146,7 @@ const Login = () => {
 	};
 
 	if (isLoggedIn()) {
-		console.log('test---');
 		navigate(`/profile`);
-	} else {
-		console.log('else test---');
 	}
 
 	const closeErrorAlert = () => {
@@ -148,8 +171,13 @@ const Login = () => {
 							<strong>{errorMessage}</strong>
 						</div>
 					) : null}
-					<h3 style={{ textAlign: 'center' }}>Sign In</h3>
 
+					<h3 style={{ textAlign: 'center' }}>Sign In</h3>
+					{loaderDiv ? (
+						<div style={{ textAlign: 'center' }}>
+							<PageLoader />
+						</div>
+					) : null}
 					<div className='form-group'>
 						<label>Email</label>
 						<input
@@ -157,6 +185,7 @@ const Login = () => {
 							className='form-control'
 							placeholder='Enter Email'
 							name='email'
+							value={localStorage.checkbox ? email : ''}
 							onChange={(e) => setEmail(e.target.value)}
 						/>
 					</div>
@@ -168,20 +197,20 @@ const Login = () => {
 							className='form-control'
 							placeholder='Enter password'
 							name='password'
+							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 						/>
 					</div>
 
 					<div className='form-group'>
-						<div className='custom-control custom-checkbox'>
+						<div>
 							<input
 								type='checkbox'
-								className='custom-control-input'
-								id='customCheck1'
+								checked={isChecked}
+								name='lsRememberMe'
+								onChange={(e) => onChangeCheckbox(e)}
 							/>
-							<label className='custom-control-label' htmlFor='customCheck1'>
-								Remember me
-							</label>
+							<label>Remember me</label>
 						</div>
 					</div>
 					<div className='clearfix'>
