@@ -20,7 +20,7 @@ const Profile = () => {
 		navigate('/');
 	}
 
-	useEffect(async () => {
+	useEffect( () => {
 		fetchCustomerOrder().then((userOrder) => {
 			console.log('userData---', userOrder);
 			if (userOrder) {
@@ -34,7 +34,7 @@ const Profile = () => {
 	}, []);
 
 	const fetchCustomerOrder = async () => {
-		const res = await fetch(
+		const res =  await fetch(
 			`/.netlify/functions/bigcommerce?endpoint=orders?customer_id=` + userId,
 			{
 				credentials: 'same-origin',

@@ -90,9 +90,9 @@ export function handler(event, context, callback) {
       ENDPOINT_QUERY_STRING
     );
     devModeLog('(in setCookieHeader function) response: ', response)
-
-    const statusCode = response.status;
-    const body = response.data;
+    if(response){
+      const statusCode = response.status;
+      const body = response.data;
 
     if (ENDPOINT_QUERY_STRING === 'carts' && statusCode === 404) {
       cookieHeader = {
@@ -112,7 +112,7 @@ export function handler(event, context, callback) {
       devModeLog(cookieHeader);
     }
      else if (responseType === 'response') {
-      if (!hasCartIdCookie && body.data.id ) {
+      if (!hasCartIdCookie  && body && body.data && body.data.id ) {
         cookieHeader = {
           'Set-Cookie': cookie.serialize('cartId', body.data.id, {
             maxAge: 60 * 60 * 24 * 28 // 4 weeks
@@ -121,6 +121,7 @@ export function handler(event, context, callback) {
         devModeLog('- Assigning cookieHeader: -');
         devModeLog(cookieHeader);
       }
+    }
     }
 
     return cookieHeader;
