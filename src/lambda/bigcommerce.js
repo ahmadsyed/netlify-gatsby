@@ -51,7 +51,7 @@ export function handler(event, context, callback) {
   // Assemble BC API URL
   const constructURL = () => {
     let ROOT_URL ='';
-    let values = ['validate'];
+    let values = ['validate','orders'];
     console.log("ENDPOINT_QUERY_STRING---",ENDPOINT_QUERY_STRING);
     if(_.some(values, (el) => _.includes(ENDPOINT_QUERY_STRING, el))){
       ROOT_URL = `https://api.bigcommerce.com/stores/${API_STORE_HASH}/v2/`;
@@ -161,6 +161,7 @@ export function handler(event, context, callback) {
     axios
       .get(constructURL(), { headers: REQUEST_HEADERS })
       .then(response => {
+        console.log('resp in get',response);
         const cookieHeader = setCookieHeader('response', response);
 
         pass(response, cookieHeader);

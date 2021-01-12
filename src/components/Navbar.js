@@ -14,6 +14,16 @@ const Navbar = class extends React.Component {
     };
   }
 
+  logout=()=>{
+    localStorage.removeItem('customerId');
+    localStorage.removeItem('email');
+    localStorage.removeItem('company');
+    localStorage.removeItem('first_name');
+    localStorage.removeItem('last_name');
+    localStorage.removeItem('phone');
+    localStorage.removeItem('isLoggedIn');
+
+  }
   toggleHamburger = () => {
     // toggle the active boolean in the state
     this.setState(
@@ -72,9 +82,11 @@ const Navbar = class extends React.Component {
               <Link className="navbar-item" to="/contact">
                 Contact
               </Link>
-              <Link className="navbar-item" to="/login">
+              {localStorage.getItem('isLoggedIn') ? <Link className="navbar-item" to="#" onClick={() => this.logout(true)}>
+                Hello {localStorage.getItem('first_name')}, Log out here!
+              </Link> : <Link className="navbar-item" to="/login">
                 Login
-              </Link>
+              </Link>}
               <CartContext.Consumer>
                 {value => {
                   return (
@@ -101,6 +113,9 @@ const Navbar = class extends React.Component {
                   <img src={github} alt="Github" />
                 </span>
               </a>
+              {localStorage.getItem('isLoggedIn') ? <Link className="navbar-item" to="/profile">
+                Profile
+              </Link>:null}
             </div>
           </div>
         </div>

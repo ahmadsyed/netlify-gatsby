@@ -4,7 +4,8 @@ import { handleLogin, isLoggedIn } from '../../services/auth';
 import { Button } from 'react-bootstrap';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './register.css';
-import Layout from '../../components/Layout'
+import Layout from '../../components/Layout';
+import _ from 'lodash';
 
 const Register = () => {
 	const [first_name, setFirstName] = useState('');
@@ -12,6 +13,8 @@ const Register = () => {
 	const [company, setCompany] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [errorLog, setErrorLog] = useState([]);
+
 
 	const handleSubmit = () => {
 		const SignupData = [
@@ -35,11 +38,16 @@ const Register = () => {
 		})
 			.then((response) => {
 				return response.json();
-			}).then(function(user) {
-				console.log('data---',user);
-				console.log('firstName---',user.data[0].first_name);
-				navigate('/login')
-
+			})
+			.then(function(user) {
+				console.log('data---', user);
+				if (user.errors) {
+					setErrorLog(user.errors);
+					window.scrollTo(0, 0);
+				} else {
+					console.log('firstName---', user.data[0].first_name);
+					navigate('/login');
+				}
 			})
 			.catch((error) => {
 				console.error(error);
@@ -51,6 +59,7 @@ const Register = () => {
 		navigate(`/profile`);
 	} else {
 		console.log('else test---');
+		console.log('error logs---', errorLog);
 	}
 
 	return (
@@ -58,9 +67,17 @@ const Register = () => {
 			<form style={{ border: '1px solid #ccc' }}>
 				<div className='container'>
 					<h3 style={{ textAlign: 'center' }}>Sign Up</h3>
-
+					<div className='container'>
+						<span style={{ color: 'red' }}>
+							<ol>
+								{_.map(errorLog, (obj, i) => {
+									return <li key={i}>{_.capitalize(obj)}</li>;
+								})}
+							</ol>
+						</span>
+					</div>
 					<div className='form-group'>
-						<label>First Name</label>
+						<label>First Name</label><span style={{"color":"red"}}>*</span>
 						<input
 							type='text'
 							className='form-control'
@@ -70,7 +87,7 @@ const Register = () => {
 						/>
 					</div>
 					<div className='form-group'>
-						<label>Last Name</label>
+						<label>Last Name</label><span style={{"color":"red"}}>*</span>
 						<input
 							type='text'
 							className='form-control'
@@ -81,7 +98,7 @@ const Register = () => {
 					</div>
 
 					<div className='form-group'>
-						<label>Company</label>
+						<label>Company</label><span style={{"color":"red"}}>*</span>
 						<input
 							type='text'
 							className='form-control'
@@ -92,7 +109,7 @@ const Register = () => {
 					</div>
 
 					<div className='form-group'>
-						<label>Password</label>
+						<label>Password</label>&nbsp;<span style={{"color":"red", fontSize:'10px'}}>(passwords must be at least 7 characters and contain both alphabetic and numeric characters.)*</span>
 						<input
 							type='password'
 							className='form-control'
@@ -103,7 +120,7 @@ const Register = () => {
 					</div>
 
 					<div className='form-group'>
-						<label>Email</label>
+						<label>Email</label><span style={{"color":"red"}}>*</span>
 						<input
 							type='email'
 							className='form-control'
@@ -125,7 +142,7 @@ const Register = () => {
 
 				{/* <button type="submit" className="btn btn-primary btn-block" onClick={() => handleSubmit()}>Submit</button> */}
 			</form>
-			</Layout>
+		</Layout>
 	);
 };
 
