@@ -4,7 +4,9 @@ import { handleLogin, isLoggedIn } from '../../services/auth';
 import { Button } from 'react-bootstrap';
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './register.css';
-
+import Layout from '../../components/Layout';
+import _ from 'lodash';
+import PageLoader from '../../utility/PageLoader';
 
 const Register = () => {
 	const [first_name, setFirstName] = useState('');
@@ -12,24 +14,11 @@ const Register = () => {
 	const [company, setCompany] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [errorLog, setErrorLog] = useState([]);
+	const [loaderDiv, setLoaderDiv] = useState(false);
 
-	console.log('store-hash---', process.env.API_STORE_HASH);
-	console.log('store-hash---', process.env.API_TOKEN);
 	const handleSubmit = () => {
-		console.log(
-			'handleSubmit---firstname',
-			first_name,
-			'---lastname---',
-			last_name,
-			'---passs----',
-			password,
-			'---email----',
-			email
-		);
-
-		let store_hash = process.env.API_STORE_HASH;
-		let XAuthToken = process.env.API_TOKEN;
-
+		setLoaderDiv(true);
 		const SignupData = [
 			{
 				email: email,
@@ -43,24 +32,26 @@ const Register = () => {
 			},
 		];
 
-		let myHeaders = new Headers({
-            'Content-Type': 'application/json',
-            'X-Auth-Token': XAuthToken,
-            "Access-Control-Allow-Origin": "*",
-			"Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-			"Access-Control-Allow-Headers": "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
-        });
-
-		return fetch('https://api.bigcommerce.com/stores/'+store_hash+'/v3/customers', {
+		fetch(`/.netlify/functions/bigcommerce?endpoint=customers`, {
 			method: 'POST',
-			headers: myHeaders,
+			credentials: 'same-origin',
+			mode: 'same-origin',
 			body: JSON.stringify(SignupData),
-			
 		})
-			.then((user) => {
-				console.log('user---', user);
-				console.log(user.first_name);
-				console.log(user.last_name);
+			.then((response) => {
+				return response.json();
+			})
+			.then(function(user) {
+				console.log('data---', user);
+				if (user.errors) {
+					setLoaderDiv(false);
+					setErrorLog(user.errors);
+					window.scrollTo(0, 0);
+				} else {
+					setLoaderDiv(false);
+					console.log('firstName---', user.data[0].first_name);
+					navigate('/login');
+				}
 			})
 			.catch((error) => {
 				console.error(error);
@@ -72,15 +63,30 @@ const Register = () => {
 		navigate(`/profile`);
 	} else {
 		console.log('else test---');
+		console.log('error logs---', errorLog);
 	}
-	return (
-		<>
-			<form style={{border:'1px solid #ccc'}}>
-				<div className='container'>
-					<h3 style={{textAlign:'center'}}>Sign Up</h3>
 
+	return (
+		<Layout>
+			<form style={{ border: '1px solid #ccc' }}>
+				<div className='container'>
+					<h3 style={{ textAlign: 'center' }}>Sign Up</h3>
+					{loaderDiv ? (
+						<div style={{ textAlign: 'center' }}>
+							<PageLoader />
+						</div>
+					) : null}
+					<div className='container'>
+						<span style={{ color: 'red' }}>
+							<ol>
+								{_.map(errorLog, (obj, i) => {
+									return <li key={i}>{_.capitalize(obj)}</li>;
+								})}
+							</ol>
+						</span>
+					</div>
 					<div className='form-group'>
-						<label>First Name</label>
+						<label>First Name</label><span style={{"color":"red"}}>*</span>
 						<input
 							type='text'
 							className='form-control'
@@ -90,7 +96,7 @@ const Register = () => {
 						/>
 					</div>
 					<div className='form-group'>
-						<label>Last Name</label>
+						<label>Last Name</label><span style={{"color":"red"}}>*</span>
 						<input
 							type='text'
 							className='form-control'
@@ -101,7 +107,7 @@ const Register = () => {
 					</div>
 
 					<div className='form-group'>
-						<label>Company</label>
+						<label>Company</label><span style={{"color":"red"}}>*</span>
 						<input
 							type='text'
 							className='form-control'
@@ -112,7 +118,7 @@ const Register = () => {
 					</div>
 
 					<div className='form-group'>
-						<label>Password</label>
+						<label>Password</label>&nbsp;<span style={{"color":"red", fontSize:'10px'}}>(passwords must be at least 7 characters and contain both alphabetic and numeric characters.)*</span>
 						<input
 							type='password'
 							className='form-control'
@@ -123,7 +129,7 @@ const Register = () => {
 					</div>
 
 					<div className='form-group'>
-						<label>Email</label>
+						<label>Email</label><span style={{"color":"red"}}>*</span>
 						<input
 							type='email'
 							className='form-control'
@@ -145,7 +151,7 @@ const Register = () => {
 
 				{/* <button type="submit" className="btn btn-primary btn-block" onClick={() => handleSubmit()}>Submit</button> */}
 			</form>
-		</>
+		</Layout>
 	);
 };
 
