@@ -5,41 +5,76 @@ import 'react-tabs/style/react-tabs.css';
 import Layout from '../../components/Layout';
 import _ from 'lodash';
 import { Button } from 'react-bootstrap';
+import {postApiData} from '../../utility/Api';
+import PageLoader from '../../utility/PageLoader';
 
-const ForgotPassword = () => {
+const ForgotPassword = (props) => {
 	const [email, setEmail] = useState('');
 	const [errorLog, setErrorLog] = useState('');
-
+	const [successLog, setSuccessLog] = useState('');
+	const [loaderDiv, setLoaderDiv] = useState(false);
+	
 	const sendRespone = async () => {
 		if (EmailValidator.validate(email)) {
 			setErrorLog('');
-			let randomPass = _.times(10, () => _.random(35).toString(36)).join('');
-			console.log('randomPass---', randomPass);
-			//sent in email the random password
-			//update the random password for the customer as per the email
+			setLoaderDiv(true);
+			//check email if exists
+			checkUser(email).then((userData) => {
+				if (userData.data.length>0) {
+                    let userId = userData.data[0].id;
+                    let where = [{
+                        url: "/forgotPassword"
+                        }];
+                        var method = 'post';
+                        let data = {
+                            'email':email,
+                            'userId':userId,
+                        };
+                       postApiData(where, data, method,true).then(res => {
+                         if (res.data && res.data.status=="success"){
+							setLoaderDiv(false);
+                            setSuccessLog(res.data.message)
+						 }
+						 else{
+							setLoaderDiv(false);
+						 }
+                       })
+                }
+                else{
+					setLoaderDiv(false);
+                    setErrorLog('Sorry email doesn not exists in the system.');
+                    return false;
+                }
+			});
 		} else {
 			setErrorLog('Email is invalid.');
 		}
+    };
 
-		// const res = await fetch(
-		// 	`/.netlify/functions/bigcommerce?endpoint=orders?customer_id=` + userId,
-		// 	{
-		// 		credentials: 'same-origin',
-		// 		mode: 'same-origin',
-		// 	}
-		// );
-		// return await res.json();
+    const checkUser = async (email) => {
+		const res = await fetch(
+			`/.netlify/functions/bigcommerce?endpoint=customers?email:in=` + email,
+			{
+				credentials: 'same-origin',
+				mode: 'same-origin',
+			}
+		);
+		return await res.json();
 	};
 
 	return (
 		<Layout>
 			<div className='container'>
 				<div className='container'>
-					<span style={{ color: 'red' }}>
-						{errorLog?errorLog:null}
-					</span>
+					<span style={{ color: 'red' }}>{errorLog ? errorLog : null}</span>
+                    <span style={{ color: 'green' }}>{successLog ? successLog : null}</span>
 				</div>
 				<div className='form-group'>
+				{loaderDiv ? (
+						<div style={{ textAlign: 'center' }}>
+							<PageLoader />
+						</div>
+					) : null}
 					<label>Email</label>
 					<input
 						type='email'
