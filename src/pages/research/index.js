@@ -18,8 +18,8 @@ const Research = (data) => {
 
 	const createTemplate = async () => {
         const data = {
-            "name": "prismic demo research",
-            "template": "<img src={{image_source}} style='width:33.3%'/>"
+            "name": "Furquan demo research ",
+            "template": "{{#each images}}<img src={{image_source}} style='width:33.3%'/>{{/each}}"
             };
 		fetch(
             `/.netlify/functions/bigcommerce?endpoint=content/widget-templates`,
@@ -81,9 +81,9 @@ const Research = (data) => {
     const createPlacements = (widget_uuid) => {
         const data = {
             "widget_uuid": widget_uuid,
-            "template_file": "/research/",
+            "template_file": "pages/page",
             "status": "active",
-            "entity_id": "1",
+            "entity_id": "5",
             "sort_order": 1,
             "region": "header_bottom"
             };
